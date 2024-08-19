@@ -9,6 +9,16 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Material
     second: {fileID: 2100000, guid: ce27530d59fd1f74e8ffdf1a99e9b432, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Platform
+    second: {fileID: 2100000, guid: 4797abf5e0f111341a591d927426a4e6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Treads
+    second: {fileID: 2100000, guid: 8ca80c51d4b10d6439da55e56664128d, type: 2}
   materials:
     materialImportMode: 2
     materialName: 0

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
@@ -24,15 +25,21 @@ public class Player : MonoBehaviour
 
     [Header("References")]
     public RectTransform tooltip;
+    public Transform shadow;
+    public Transform model;
+
+    [Header("Events")]
+    public UnityEvent onJump = new();
+    public UnityEvent onLand = new();
 
     public void Jump() {
         if (onGround && Time.time - jumpSquatStart > jumpSquatTime) {
+            onJump.Invoke();
             velocity.y = jumpHeight;
             transform.position = transform.position + new Vector3(0f, 0.1f, 0f);
             onGround = false;
-            // if (onPlatform) {
-            //     velocity += new Vector3(platformVelocity.x, 0f, platformVelocity.y);
-            // }
+            if (onPlatform)
+                airVelocity = platformVelocity;
             onPlatform = false;
         }
     }
@@ -50,12 +57,18 @@ public class Player : MonoBehaviour
         transform.position = transform.position + new Vector3(0f, 0.1f, 0f);
         velocity.y = joltAmount.y;
         airVelocity = joltDir.normalized * joltAmount.x;
+        if (onPlatform)
+            airVelocity += platformVelocity;
         onGround = false;
     }
     public void Submit() {
         if (interactable) {
             interactable.GetComponent<Interactable>().onInteract.Invoke();
         }
+    }
+
+    void Start() {
+        shadow.parent = null;
     }
 
     [System.NonSerialized]
@@ -68,11 +81,19 @@ public class Player : MonoBehaviour
     bool onPlatform = true;
     float speed = 0f;
     void FixedUpdate() {
-        float targetSpeed = dir.magnitude * speedMultiplier;
+        float targetSpeed = Mathf.Clamp01(dir.magnitude) * speedMultiplier;
         Vector2 targetDir = dir.normalized;
 
         // Facing
-        facingDir = Vector2.Lerp(facingDir, targetDir, Time.fixedDeltaTime * turnSpeed);
+
+        if (Vector2.Dot(facingDir, targetDir) < 0 && speed < 0.1f) { // >90deg difference
+            facingDir = targetDir;
+        } else {
+            facingDir = Vector2.Lerp(facingDir, targetDir, Time.fixedDeltaTime * turnSpeed);
+        }
+
+        if (facingDir.magnitude > 0.05f)
+            model.rotation = Quaternion.LookRotation(new Vector3(facingDir.x, 0f, facingDir.y), Vector3.up);
 
         // Movement
         if (dir.magnitude < 0.05f) { // Braking
@@ -94,14 +115,27 @@ public class Player : MonoBehaviour
         // Friction/drag
         airVelocity *= airDrag;
 
+        // Apply velocity
+        transform.position += velocity * Time.fixedDeltaTime;
+        if (!onGround) {
+            transform.position += new Vector3(airVelocity.x, 0f, airVelocity.y) * Time.fixedDeltaTime;
+        }
+        if (onPlatform) {
+            transform.position += new Vector3(platformVelocity.x, 0f, platformVelocity.y) * Time.fixedDeltaTime;
+        }
+
         // Ground collision
         RaycastHit hit;
-        if (Physics.Raycast(new Ray(transform.position + new Vector3(0, 1, 0), Vector3.down), out hit, 2f, ~0, QueryTriggerInteraction.Ignore)) {
-            if (hit.distance <= 1.05f) {
+        if (Physics.Raycast(new Ray(transform.position + new Vector3(0, 1, 0), Vector3.down), out hit, 15f, ~0, QueryTriggerInteraction.Ignore)) {
+            // Snap harder to the ground if we haven't jumped
+            // ...goal is to avoid annoying stepping/falling effect while the platform tilts
+            if ((!onGround && hit.distance <= 1.05f) || (onGround && hit.distance <= 1.15f)) {
                 transform.position = hit.point;
                 velocity.y = 0f;
-                if (!onGround)
+                if (!onGround) {
                     jumpSquatStart = Time.time;
+                    onLand.Invoke();
+                }
                 onGround = true;
                 onPlatform = hit.collider.gameObject.tag == "Platform";
                 airVelocity = Vector2.zero;
@@ -109,15 +143,12 @@ public class Player : MonoBehaviour
                 onGround = false;
                 onPlatform = false;
             }
-        }
 
-        // Apply velocity
-        transform.position += velocity * Time.fixedDeltaTime;
-        if (!onGround) {
-            transform.position += new Vector3(airVelocity.x, 0f, airVelocity.y) * Time.fixedDeltaTime;
-        }
-        if (true) {
-            transform.position += new Vector3(platformVelocity.x, 0f, platformVelocity.y);
+            shadow.gameObject.SetActive(true);
+            shadow.position = hit.point + hit.normal * 0.05f;
+            shadow.rotation = Quaternion.LookRotation(Vector3.Cross(hit.normal, Vector3.right), hit.normal);
+        } else {
+            shadow.gameObject.SetActive(false);
         }
     }
 
@@ -136,7 +167,7 @@ public class Player : MonoBehaviour
     void OnTriggerStay(Collider c) {
         if (c == interactable) {
             if (showTooltips)
-                tooltip.anchoredPosition = Camera.main.WorldToScreenPoint(c.transform.position + Vector3.up * 1.5f);
+                tooltip.anchoredPosition = Camera.main.WorldToViewportPoint(c.transform.position + Vector3.up * 1.5f) * new Vector2(800, 600);
         }
     }
     void OnTriggerExit(Collider c) {

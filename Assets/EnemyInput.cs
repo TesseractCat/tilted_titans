@@ -51,7 +51,7 @@ public class EnemyInput : MonoBehaviour
             }
         }
 
-        Debug.Log(state);
+        // Debug.Log(state);
 
         Vector2 offset = Vector2.ClampMagnitude(targetPoint - centerPoint, maxSpeed);
         player.MoveTowards(robot.position.xz() + offset);

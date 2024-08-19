@@ -15,13 +15,21 @@ public class Robot : MonoBehaviour
     public float collisionJoltModifier;
     public float collisionKnockback;
 
+    public float collisionDamage;
+    public float punchDamage;
+
     [Header("References")]
     public Transform platform;
     public Transform player;
 
+    [Header("Events")]
+    public UnityEvent onRobotCollide = new();
+
     Quaternion platformStartRot;
+    Health health;
     void Start() {
         platformStartRot = platform.localRotation;
+        health = GetComponent<Health>();
     }
 
     Vector2 tiltAmount;
@@ -50,7 +58,7 @@ public class Robot : MonoBehaviour
         transform.position += new Vector3(movement.x, 0f, movement.y);
         transform.position += new Vector3(velocity.x, 0f, velocity.y);
         velocity *= 0.75f;
-        player.GetComponent<Player>().platformVelocity = movement;
+        player.GetComponent<Player>().platformVelocity = movement/Time.fixedDeltaTime;
     }
 
     Vector2 BiasToCardinal(Vector2 vec, float biasStrength) {
@@ -67,14 +75,13 @@ public class Robot : MonoBehaviour
         return Vector2.Lerp(n, dirs[maxIdx], biasStrength) * vec.magnitude;
     }
 
-    [System.NonSerialized]
-    public UnityEvent onRobotCollide = new();
     void OnTriggerEnter(Collider c) {
         if (c.gameObject.tag == "Robot") {
             Vector2 collisionDir = (transform.position.xz() - c.transform.position.xz()).normalized;
             velocity = collisionDir * collisionKnockback;
             player.GetComponent<Player>().Jolt(collisionDir * collisionJoltModifier);
             onRobotCollide.Invoke();
+            health.Damage(collisionDamage);
         }
     }
 }
