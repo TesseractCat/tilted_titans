@@ -30,6 +30,7 @@ public class Player : MonoBehaviour
     public RectTransform tooltip;
     public Transform shadow;
     public Transform model;
+    public AudioSource walkSfx;
 
     [Header("Events")]
     public UnityEvent onJump = new();
@@ -120,6 +121,7 @@ public class Player : MonoBehaviour
                 speed = Mathf.Max(speed - deceleration, targetSpeed);
             }
         }
+        walkSfx.volume = onGround ? speed/speedMultiplier : 0f;
 
         velocity.x = speed * facingDir.x;
         velocity.z = speed * facingDir.y;
@@ -150,6 +152,7 @@ public class Player : MonoBehaviour
                 if (!onGround) {
                     jumpSquatStart = Time.time;
                     onLand.Invoke();
+                    walkSfx.Play();
                 }
                 onGround = true;
                 onPlatform = hit.collider.gameObject.tag == "Platform";

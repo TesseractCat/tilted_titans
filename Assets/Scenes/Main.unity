@@ -187,6 +187,14 @@ PrefabInstance:
       propertyPath: speedMultiplier
       value: 3
       objectReference: {fileID: 0}
+    - target: {fileID: 5796442210744367390, guid: 3d369e6ad0472914eaaf7901123b330a, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5829513225569215471, guid: 3d369e6ad0472914eaaf7901123b330a, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9170836854061678289, guid: 3d369e6ad0472914eaaf7901123b330a, type: 3}
       propertyPath: m_Name
       value: Enemy Player
@@ -1076,7 +1084,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 50, y: 1, z: 50}
+  m_LocalScale: {x: 500, y: 1, z: 500}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -1210,6 +1218,30 @@ PrefabInstance:
     - target: {fileID: 4049598350217843114, guid: 81d0571ee950ca346b5f691b53b8e27e, type: 3}
       propertyPath: movementSpeedModifier
       value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6679284994930020513, guid: 81d0571ee950ca346b5f691b53b8e27e, type: 3}
+      propertyPath: onHalfHealth.m_PersistentCalls.m_Calls.Array.data[1].m_Mode
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 6679284994930020513, guid: 81d0571ee950ca346b5f691b53b8e27e, type: 3}
+      propertyPath: onHalfHealth.m_PersistentCalls.m_Calls.Array.data[1].m_Target
+      value: 
+      objectReference: {fileID: 1134828768}
+    - target: {fileID: 6679284994930020513, guid: 81d0571ee950ca346b5f691b53b8e27e, type: 3}
+      propertyPath: onHalfHealth.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6679284994930020513, guid: 81d0571ee950ca346b5f691b53b8e27e, type: 3}
+      propertyPath: onHalfHealth.m_PersistentCalls.m_Calls.Array.data[1].m_MethodName
+      value: set_enabled
+      objectReference: {fileID: 0}
+    - target: {fileID: 6679284994930020513, guid: 81d0571ee950ca346b5f691b53b8e27e, type: 3}
+      propertyPath: onHalfHealth.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: UnityEngine.Behaviour, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6679284994930020513, guid: 81d0571ee950ca346b5f691b53b8e27e, type: 3}
+      propertyPath: onHalfHealth.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 8877488765758855737, guid: 81d0571ee950ca346b5f691b53b8e27e, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2212,6 +2244,10 @@ PrefabInstance:
     - target: {fileID: 4049598350217843114, guid: 81d0571ee950ca346b5f691b53b8e27e, type: 3}
       propertyPath: onRobotCollide.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 6679284994930020513, guid: 81d0571ee950ca346b5f691b53b8e27e, type: 3}
+      propertyPath: onHalfHealth.m_PersistentCalls.m_Calls.Array.size
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6679284994930020513, guid: 81d0571ee950ca346b5f691b53b8e27e, type: 3}
       propertyPath: onDamageTaken.m_PersistentCalls.m_Calls.Array.size
