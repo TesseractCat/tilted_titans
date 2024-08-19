@@ -39,14 +39,14 @@ public class EnemyInput : MonoBehaviour
         } else if (state == State.PunchPositioning) {
             targetPoint = enemyRobot.position.xz() + Vector2.up * 15f + Vector2.right * 7.5f;
             maxSpeed = 3f;
-            if ((targetPoint - centerPoint).magnitude < 0.5f) {
+            if ((targetPoint - centerPoint).magnitude < 2f) {
                 state = State.Punching;
             }
         } else if (state == State.Punching) {
             targetPoint = centerPoint + Vector2.left * 3.5f;
             maxSpeed = 3.5f;
             if ((targetPoint - playerPoint).magnitude < 0.2f) {
-                state = State.Following;
+                state = State.PunchPositioning;
                 player.Submit();
             }
         }

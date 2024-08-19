@@ -86,7 +86,8 @@ public class Robot : MonoBehaviour
 
     public void Hit(Vector2 dir, float damage) {
         velocity = dir * collisionKnockback;
-        player.GetComponent<Player>().Jolt(dir * collisionJoltModifier);
+        if (player.GetComponent<Player>().OverPlatform())
+            player.GetComponent<Player>().Jolt(dir * collisionJoltModifier);
         onRobotCollide.Invoke();
         health.Damage(damage);
     }
@@ -95,9 +96,9 @@ public class Robot : MonoBehaviour
         IEnumerator Helper() {
             animator.SetTrigger("PunchRight");
             yield return new WaitForSeconds(0.4f);
-            Ray punchRay = new Ray(transform.position + Vector3.up * 5f, transform.forward);
+            Ray punchRay = new Ray(transform.position + Vector3.up * 6f, transform.forward);
             RaycastHit hit;
-            if (Physics.Raycast(punchRay, out hit, 20f)) {
+            if (Physics.Raycast(punchRay, out hit, 25f)) {
                 if (hit.collider.tag == "Robot") {
                     hit.collider.GetComponent<Robot>().Hit(transform.forward.xz(), punchDamage);
                 }

@@ -5228,6 +5228,7 @@ MonoBehaviour:
   jumpSquatTime: 0.05
   gravity: 30
   airDrag: 0.95
+  slideAmount: 1
   joltAmount: {x: 20, y: 10}
   showTooltips: 0
   tooltip: {fileID: 0}

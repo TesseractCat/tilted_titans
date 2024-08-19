@@ -17,6 +17,7 @@ public class Player : MonoBehaviour
     public float jumpSquatTime;
     public float gravity;
     public float airDrag;
+    public float slideAmount;
     public Vector2 joltAmount;
     public bool showTooltips;
 
@@ -121,7 +122,7 @@ public class Player : MonoBehaviour
             transform.position += new Vector3(airVelocity.x, 0f, airVelocity.y) * Time.fixedDeltaTime;
         }
         if (onPlatform) {
-            transform.position += new Vector3(platformVelocity.x, 0f, platformVelocity.y) * Time.fixedDeltaTime;
+            transform.position += new Vector3(platformVelocity.x, 0f, platformVelocity.y) * Time.fixedDeltaTime * slideAmount;
         }
 
         // Ground collision
@@ -154,6 +155,14 @@ public class Player : MonoBehaviour
 
     public bool OnPlatform() {
         return this.onPlatform;
+    }
+    public bool OverPlatform() {
+        RaycastHit hit;
+        if (Physics.Raycast(new Ray(transform.position + new Vector3(0, 1, 0), Vector3.down), out hit, 15f, ~0, QueryTriggerInteraction.Ignore)) {
+            if (hit.collider.tag == "Platform")
+                return true;
+        }
+        return false;
     }
 
     Collider interactable;
