@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UIElements;
@@ -25,6 +26,7 @@ public class Player : MonoBehaviour
     public Vector2 platformVelocity;
 
     [Header("References")]
+    public GameObject warningPanel;
     public RectTransform tooltip;
     public Transform shadow;
     public Transform model;
@@ -81,7 +83,19 @@ public class Player : MonoBehaviour
     bool onGround = true;
     bool onPlatform = true;
     float speed = 0f;
+    float offmechTime = 0;
     void FixedUpdate() {
+        if (warningPanel) {
+            if (!OverPlatform()) {
+                offmechTime += Time.fixedDeltaTime;
+                if (offmechTime > 1f) {
+                    warningPanel.SetActive(true);
+                }
+            } else {
+                warningPanel.SetActive(false);
+                offmechTime = 0f;
+            }
+        }
         float targetSpeed = Mathf.Clamp01(dir.magnitude) * speedMultiplier;
         Vector2 targetDir = dir.normalized;
 
@@ -169,8 +183,11 @@ public class Player : MonoBehaviour
     void OnTriggerEnter(Collider c) {
         if (c.GetComponent<Interactable>()) {
             interactable = c;
-            if (showTooltips)
+            if (showTooltips) {
+                tooltip.GetComponentInChildren<TMP_Text>().text =
+                    $"{interactable.GetComponent<Interactable>().interactText}\n(A)/[Ret]";
                 tooltip.gameObject.SetActive(true);
+            }
         }
     }
     void OnTriggerStay(Collider c) {

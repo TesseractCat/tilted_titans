@@ -84,6 +84,10 @@ public class Robot : MonoBehaviour
         }
     }
 
+    public void Reenter() {
+        player.transform.position = transform.position + Vector3.up * 10f;
+    }
+
     public void Hit(Vector2 dir, float damage) {
         velocity = dir * collisionKnockback;
         if (player.GetComponent<Player>().OverPlatform())
@@ -92,17 +96,22 @@ public class Robot : MonoBehaviour
         health.Damage(damage);
     }
 
+    bool punching = false;
     public void PunchRight() {
+        if (punching) return;
         IEnumerator Helper() {
+            punching = true;
             animator.SetTrigger("PunchRight");
             yield return new WaitForSeconds(0.4f);
             Ray punchRay = new Ray(transform.position + Vector3.up * 6f, transform.forward);
             RaycastHit hit;
-            if (Physics.Raycast(punchRay, out hit, 25f)) {
+            if (Physics.Raycast(punchRay, out hit, 15f)) {
                 if (hit.collider.tag == "Robot") {
                     hit.collider.GetComponent<Robot>().Hit(transform.forward.xz(), punchDamage);
                 }
             }
+            yield return new WaitForSeconds(1f);
+            punching = false;
         }
         StartCoroutine(Helper());
     }

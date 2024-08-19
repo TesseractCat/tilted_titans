@@ -13,7 +13,8 @@ public class EnemyInput : MonoBehaviour
         Following,
         Ramming,
         PunchPositioning,
-        Punching
+        Punching,
+        Reentering
     }
 
     Player player;
@@ -29,6 +30,8 @@ public class EnemyInput : MonoBehaviour
         Vector2 targetPoint = Vector2.zero;
         Vector2 centerPoint = robot.position.xz();
         Vector2 playerPoint = player.transform.position.xz();
+
+        if (!player.OverPlatform()) state = State.Reentering;
 
         if (state == State.Following) {
             targetPoint = enemyRobot.position.xz() + Vector2.up * 20f;
@@ -49,6 +52,11 @@ public class EnemyInput : MonoBehaviour
                 state = State.PunchPositioning;
                 player.Submit();
             }
+        } else if (state == State.Reentering) {
+            if (player.OverPlatform()) state = State.Ramming;
+            targetPoint = centerPoint;
+            maxSpeed = 100f;
+            player.Submit();
         }
 
         // Debug.Log(state);
