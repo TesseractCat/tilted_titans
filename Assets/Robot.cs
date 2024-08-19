@@ -103,7 +103,7 @@ public class Robot : MonoBehaviour
             punching = true;
             animator.SetTrigger("PunchRight");
             yield return new WaitForSeconds(0.4f);
-            Ray punchRay = new Ray(transform.position + Vector3.up * 6f, transform.forward);
+            Ray punchRay = new Ray(transform.position + Vector3.up * 6f + transform.rotation * Vector3.right * 5f, transform.forward);
             RaycastHit hit;
             if (Physics.Raycast(punchRay, out hit, 15f)) {
                 if (hit.collider.tag == "Robot") {
