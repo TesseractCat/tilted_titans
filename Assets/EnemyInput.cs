@@ -20,7 +20,7 @@ public class EnemyInput : MonoBehaviour
     State state;
     float maxSpeed = 1f;
     void Start() {
-        state = State.PunchPositioning;
+        state = State.Ramming;
         player = GetComponent<Player>();
         robot.GetComponent<Robot>().onRobotCollide.AddListener(OnRobotCollide);
     }
@@ -37,13 +37,13 @@ public class EnemyInput : MonoBehaviour
             targetPoint = enemyRobot.position.xz();
             maxSpeed = 3f;
         } else if (state == State.PunchPositioning) {
-            targetPoint = enemyRobot.position.xz() + Vector2.up * 15f + Vector2.left * 10f;
+            targetPoint = enemyRobot.position.xz() + Vector2.up * 15f + Vector2.right * 7.5f;
             maxSpeed = 3f;
             if ((targetPoint - centerPoint).magnitude < 0.5f) {
                 state = State.Punching;
             }
         } else if (state == State.Punching) {
-            targetPoint = centerPoint + Vector2.right * 3.5f;
+            targetPoint = centerPoint + Vector2.left * 3.5f;
             maxSpeed = 3.5f;
             if ((targetPoint - playerPoint).magnitude < 0.2f) {
                 state = State.Following;

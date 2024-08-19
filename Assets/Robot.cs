@@ -27,9 +27,11 @@ public class Robot : MonoBehaviour
 
     Quaternion platformStartRot;
     Health health;
+    Animator animator;
     void Start() {
         platformStartRot = platform.localRotation;
         health = GetComponent<Health>();
+        animator = GetComponentInChildren<Animator>();
     }
 
     Vector2 tiltAmount;
@@ -78,10 +80,29 @@ public class Robot : MonoBehaviour
     void OnTriggerEnter(Collider c) {
         if (c.gameObject.tag == "Robot") {
             Vector2 collisionDir = (transform.position.xz() - c.transform.position.xz()).normalized;
-            velocity = collisionDir * collisionKnockback;
-            player.GetComponent<Player>().Jolt(collisionDir * collisionJoltModifier);
-            onRobotCollide.Invoke();
-            health.Damage(collisionDamage);
+            this.Hit(collisionDir, collisionDamage);
         }
+    }
+
+    public void Hit(Vector2 dir, float damage) {
+        velocity = dir * collisionKnockback;
+        player.GetComponent<Player>().Jolt(dir * collisionJoltModifier);
+        onRobotCollide.Invoke();
+        health.Damage(damage);
+    }
+
+    public void PunchRight() {
+        IEnumerator Helper() {
+            animator.SetTrigger("PunchRight");
+            yield return new WaitForSeconds(0.4f);
+            Ray punchRay = new Ray(transform.position + Vector3.up * 5f, transform.forward);
+            RaycastHit hit;
+            if (Physics.Raycast(punchRay, out hit, 20f)) {
+                if (hit.collider.tag == "Robot") {
+                    hit.collider.GetComponent<Robot>().Hit(transform.forward.xz(), punchDamage);
+                }
+            }
+        }
+        StartCoroutine(Helper());
     }
 }
