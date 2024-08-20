@@ -53,8 +53,11 @@ public class Robot : MonoBehaviour
 
         platform.localRotation = Quaternion.FromToRotation(
             Vector3.up,
-            Vector3.up - new Vector3(-tiltAmount.y, 0, tiltAmount.x)
+            Vector3.up - new Vector3(tiltAmount.x, 0, tiltAmount.y)
         ) * platformStartRot;
+
+        animator.SetFloat("Speed X", -tiltAmount.x/maxTilt);
+        animator.SetFloat("Speed Y", -tiltAmount.y/maxTilt);
 
         Vector2 movement = Quaternion.Euler(0,0,transform.rotation.eulerAngles.y) * BiasToCardinal(-tiltAmount * movementSpeedModifier, cardinalBias);
         transform.position += new Vector3(movement.x, 0f, movement.y);
@@ -81,11 +84,14 @@ public class Robot : MonoBehaviour
         if (c.gameObject.tag == "Robot") {
             Vector2 collisionDir = (transform.position.xz() - c.transform.position.xz()).normalized;
             this.Hit(collisionDir, collisionDamage);
+        } else if (c.gameObject.tag == "Building") {
+            Vector2 collisionDir = (transform.position.xz() - c.transform.position.xz()).normalized;
+            this.Hit(collisionDir, collisionDamage * 0.5f);
         }
     }
 
     public void Reenter() {
-        player.transform.position = transform.position + Vector3.up * 10f;
+        player.transform.position = transform.position + Vector3.up * 12.5f;
     }
 
     public void Hit(Vector2 dir, float damage) {
@@ -97,13 +103,15 @@ public class Robot : MonoBehaviour
     }
 
     bool punching = false;
-    public void PunchRight() {
+    void Punch(bool right) {
         if (punching) return;
         IEnumerator Helper() {
             punching = true;
-            animator.SetTrigger("PunchRight");
+            animator.SetTrigger(right ? "PunchRight" : "PunchLeft");
             yield return new WaitForSeconds(0.4f);
-            Ray punchRay = new Ray(transform.position + Vector3.up * 6f + transform.rotation * Vector3.right * 5f, transform.forward);
+            Ray punchRay = new Ray(
+                transform.position + Vector3.up * 6f
+                + transform.rotation * (right ? Vector3.right : Vector3.left) * 5f, transform.forward);
             RaycastHit hit;
             if (Physics.Raycast(punchRay, out hit, 15f)) {
                 if (hit.collider.tag == "Robot") {
@@ -114,5 +122,17 @@ public class Robot : MonoBehaviour
             punching = false;
         }
         StartCoroutine(Helper());
+    }
+    public void PunchRight() {
+        Punch(true);
+    }
+    public void PunchLeft() {
+        Punch(false);
+    }
+
+    public void Death() {
+        animator.SetFloat("Speed X", 0f);
+        animator.SetFloat("Speed Y", 0f);
+        this.enabled = false;
     }
 }

@@ -19,6 +19,7 @@ public class Health : MonoBehaviour
                 onHalfHealth.Invoke();
             }
         } else {
+            onDamageTaken.Invoke(amount, health);
             onDeath.Invoke();
         }
     }
