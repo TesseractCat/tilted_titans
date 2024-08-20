@@ -333,6 +333,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cbff9f27f266e9c439a4eb42d56f1b6d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  avoidanceDist: 17.5
   robot: {fileID: 4592636802481357163}
 --- !u!114 &6206820783395424895 stripped
 MonoBehaviour:

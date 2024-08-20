@@ -1,11 +1,16 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Analytics;
 
 [RequireComponent(typeof(Player))]
 public class EnemyInput : MonoBehaviour
 {
+    [Header("Settings")]
+    public float avoidanceDist;
+
+    [Header("References")]
     public Transform robot;
     Transform enemyRobot;
 
@@ -33,6 +38,11 @@ public class EnemyInput : MonoBehaviour
         Vector2 targetPoint = Vector2.zero;
         Vector2 centerPoint = robot.position.xz();
         Vector2 playerPoint = player.transform.position.xz();
+
+        List<Vector2> otherRobotPoints = GameObject.FindGameObjectsWithTag("Robot")
+            .Where(r => r.name == "Enemy Robot"  && r != robot.gameObject)
+            .Select(r => r.transform.position.xz())
+            .ToList();
 
         if (!player.OverPlatform()) state = State.Reentering;
 
@@ -71,9 +81,18 @@ public class EnemyInput : MonoBehaviour
             }
         }
 
-        // Debug.Log(state);
+        // Avoid other enemy robots
+        if (state != State.Reentering && state != State.Taunting) {
+            foreach (Vector2 orp in otherRobotPoints) {
+                if (Vector2.Distance(centerPoint, orp) < avoidanceDist) {
+                    //offset = Vector2.ClampMagnitude(-(orp - centerPoint), maxDistance);
+                    targetPoint += -(orp - centerPoint) * 10f;
+                }
+            }
+        }
 
         Vector2 offset = Vector2.ClampMagnitude(targetPoint - centerPoint, maxDistance);
+
         player.MoveTowards(robot.position.xz() + offset);
     }
 
