@@ -10,6 +10,7 @@ public class Health : MonoBehaviour
     public UnityEvent onHalfHealth;
 
     float health = 1f;
+    bool dead = false;
     public void Damage(float amount) {
         health -= amount;
         health = Mathf.Clamp01(health);
@@ -20,7 +21,10 @@ public class Health : MonoBehaviour
             }
         } else {
             onDamageTaken.Invoke(amount, health);
-            onDeath.Invoke();
+            if (!dead) {
+                dead = true;
+                onDeath.Invoke();
+            }
         }
     }
     public void Heal(float amount) {

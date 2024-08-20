@@ -79,13 +79,14 @@ public class Player : MonoBehaviour
     void Start() {
         shadow.parent = null;
         animator = GetComponentInChildren<Animator>();
+        facingDir = Quaternion.Euler(0, 0, transform.rotation.eulerAngles.y) * Vector2.up;
     }
 
     [System.NonSerialized]
     public Vector2 dir = Vector2.zero;
     Vector3 velocity = Vector3.zero;
     Vector2 airVelocity = Vector2.zero;
-    Vector2 facingDir = Vector3.right;
+    Vector2 facingDir;
     float jumpSquatStart = 0f;
     bool onGround = true;
     bool onPlatform = true;

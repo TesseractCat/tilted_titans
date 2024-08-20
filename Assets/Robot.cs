@@ -23,6 +23,7 @@ public class Robot : MonoBehaviour
     public Transform player;
 
     [Header("Events")]
+    public UnityEvent onStart = new();
     public UnityEvent onRobotCollide = new();
 
     Quaternion platformStartRot;
@@ -32,6 +33,8 @@ public class Robot : MonoBehaviour
         platformStartRot = platform.localRotation;
         health = GetComponent<Health>();
         animator = GetComponentInChildren<Animator>();
+        onStart.Invoke();
+        animator.SetTrigger("Init");
     }
 
     Vector2 tiltAmount;
