@@ -13,9 +13,10 @@ public class CitySpawner : MonoBehaviour
             for (int y = -buildingSquare; y < buildingSquare; y++) {
                 if ((x * x + y * y) < 6 + Random.Range(-1, 2)) continue;
                 var b = Instantiate(buildingPrefab, new Vector3(x * 45, 0, y * 45), Quaternion.identity);
+                b.transform.parent = transform;
 
                 b.transform.position += new Vector3(Random.Range(-jitterAmount, jitterAmount), 0, Random.Range(-jitterAmount, jitterAmount));
-                b.transform.localScale = new Vector3(Random.Range(15, 25), Random.Range(50, 100), Random.Range(15, 25));
+                b.transform.localScale = new Vector3(Random.Range(10, 20), Random.Range(30, 70), Random.Range(10, 20));
                 b.GetComponent<Renderer>().material.SetFloat("_Scale", Random.Range(0.75f, 1.25f) * b.GetComponent<Renderer>().material.GetFloat("_Scale"));
             }
         }

@@ -107,7 +107,7 @@ public class Robot : MonoBehaviour
 
     bool punching = false;
     void Punch(bool right) {
-        if (punching) return;
+        if (punching || !this.enabled) return;
         IEnumerator Helper() {
             punching = true;
             animator.SetTrigger(right ? "PunchRight" : "PunchLeft");

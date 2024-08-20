@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,10 +10,10 @@ public class GameManager : MonoBehaviour
     public UnityEvent onLose = new();
 
     [Header("References")]
+    public GameObject enemyPrefab;
+    public Transform enemySpawnPoint;
     public Robot robot;
-    public Robot enemyRobot;
     public UserInput player;
-    public GameObject enemyPlayer;
     public GameObject mainMenuCamera;
     public GameObject gameCamera;
     public InfoPanel info;
@@ -24,9 +25,17 @@ public class GameManager : MonoBehaviour
         robot.GetComponent<Health>().onDeath.AddListener(() => {
             IEnumerator Helper() {
                 yield return new WaitForSeconds(0.5f);
+                foreach (AudioSource audioSource in FindObjectsOfType<AudioSource>())
+                    audioSource.Stop();
                 onLose.Invoke();
                 Time.timeScale = 0f;
-                info.Show("<color=red>you lost</color>\npress (start)/[escape]\nto try again");
+                if (enemiesKilled == 0) {
+                    info.Show("<color=red>you lost</color>\npress (start)/[return]\nto try again");
+                } else if (enemiesKilled == 1) {
+                    info.Show("<color=green>you defeated your opponent</color>\nbut there were more robots to fight!\npress (start)/[return]\nto keep going");
+                } else {
+                    info.Show($"<color=#90D5FF>you defeated {enemiesKilled} robots</color>\nbut the mecha horde seems endless...\npress (start)/[return]\nto re-enter the fray");
+                }
                 lost = true;
             }
             StartCoroutine(Helper());
@@ -42,13 +51,12 @@ public class GameManager : MonoBehaviour
                 robot.enabled = true;
                 player.enabled = true;
                 player.transform.position = new Vector3(0, player.transform.position.y, 0);
-                enemyRobot.gameObject.SetActive(true);
-                enemyPlayer.SetActive(true);
+                Instantiate(enemyPrefab, enemySpawnPoint.position, Quaternion.identity);
 
                 mainMenuCamera.SetActive(false);
                 gameCamera.SetActive(true);
             }
-        } else {
+        } else if (!lost) {
             if (Input.GetButtonDown("Cancel")) {
                 paused = !paused;
                 if (paused) {
@@ -58,6 +66,17 @@ public class GameManager : MonoBehaviour
                 }
                 Time.timeScale = paused ? 0f : 1f;
             }
+        } else {
+            if (Input.GetButtonDown("Submit") || Input.GetButtonDown("Cancel")) {
+                Time.timeScale = 1f;
+                SceneManager.LoadScene("Main");
+            }
         }
+    }
+
+    int enemiesKilled = 0;
+    public void EnemyKilled() {
+        enemiesKilled++;
+        Instantiate(enemyPrefab, enemySpawnPoint.position, Quaternion.identity);
     }
 }

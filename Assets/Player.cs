@@ -36,6 +36,7 @@ public class Player : MonoBehaviour
     [Header("Events")]
     public UnityEvent onJump = new();
     public UnityEvent onLand = new();
+    public UnityEvent onInteract = new();
 
     public void Jump() {
         if (onGround && Time.time - jumpSquatStart > jumpSquatTime) {
@@ -72,6 +73,7 @@ public class Player : MonoBehaviour
     public void Submit() {
         if (interactable) {
             interactable.GetComponent<Interactable>().onInteract.Invoke();
+            onInteract.Invoke();
         }
     }
 

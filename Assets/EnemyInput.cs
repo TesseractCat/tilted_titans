@@ -7,7 +7,7 @@ using UnityEngine.Analytics;
 public class EnemyInput : MonoBehaviour
 {
     public Transform robot;
-    public Transform enemyRobot;
+    Transform enemyRobot;
 
     enum State {
         Following,
@@ -22,6 +22,7 @@ public class EnemyInput : MonoBehaviour
     State state;
     float maxDistance = 1f;
     void Start() {
+        enemyRobot = GameObject.Find("Robot").transform;
         state = State.Ramming;
         player = GetComponent<Player>();
         robot.GetComponent<Robot>().onRobotCollide.AddListener(OnRobotCollide);
@@ -85,5 +86,6 @@ public class EnemyInput : MonoBehaviour
     void OnRobotDeath() {
         state = State.Taunting;
         dead = true;
+        FindObjectOfType<GameManager>().EnemyKilled();
     }
 }
