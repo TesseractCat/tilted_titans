@@ -44,7 +44,7 @@ public class EnemyInput : MonoBehaviour
         } else if (state == State.PunchPositioning) {
             targetPoint = enemyRobot.position.xz() + Vector2.up * 15f + Vector2.right * 7.5f;
             maxDistance = 3f;
-            if ((targetPoint - centerPoint).magnitude < 2f) {
+            if ((targetPoint - centerPoint).magnitude < 3.5f) {
                 state = State.Punching;
             }
         } else if (state == State.Punching) {

@@ -31,6 +31,7 @@ public class Player : MonoBehaviour
     public Transform shadow;
     public Transform model;
     public AudioSource walkSfx;
+    public AudioSource jumpSfx;
 
     [Header("Events")]
     public UnityEvent onJump = new();
@@ -39,6 +40,9 @@ public class Player : MonoBehaviour
     public void Jump() {
         if (onGround && Time.time - jumpSquatStart > jumpSquatTime) {
             onJump.Invoke();
+            animator.SetTrigger("Jump");
+            jumpSfx.Play();
+            jumpSfx.pitch = Random.Range(0.95f, 1.05f);
             velocity.y = jumpHeight;
             transform.position = transform.position + new Vector3(0f, 0.1f, 0f);
             onGround = false;
@@ -71,8 +75,10 @@ public class Player : MonoBehaviour
         }
     }
 
+    Animator animator;
     void Start() {
         shadow.parent = null;
+        animator = GetComponentInChildren<Animator>();
     }
 
     [System.NonSerialized]
@@ -122,6 +128,7 @@ public class Player : MonoBehaviour
             }
         }
         walkSfx.volume = onGround ? speed/speedMultiplier : 0f;
+        animator.SetFloat("Speed", onGround ? speed/speedMultiplier : 0f);
 
         velocity.x = speed * facingDir.x;
         velocity.z = speed * facingDir.y;
@@ -152,6 +159,8 @@ public class Player : MonoBehaviour
                 if (!onGround) {
                     jumpSquatStart = Time.time;
                     onLand.Invoke();
+                    animator.SetTrigger("Land");
+                    animator.ResetTrigger("Fall");
                     walkSfx.Play();
                 }
                 onGround = true;
@@ -160,6 +169,7 @@ public class Player : MonoBehaviour
             } else {
                 onGround = false;
                 onPlatform = false;
+                animator.SetTrigger("Fall");
             }
 
             shadow.gameObject.SetActive(true);
@@ -195,8 +205,10 @@ public class Player : MonoBehaviour
     }
     void OnTriggerStay(Collider c) {
         if (c == interactable) {
-            if (showTooltips)
-                tooltip.anchoredPosition = Camera.main.WorldToViewportPoint(c.transform.position + Vector3.up * 1.5f) * new Vector2(800, 600);
+            if (showTooltips) {
+                Vector2 p = Camera.main.WorldToViewportPoint(c.transform.position + Vector3.up * 1.5f) * new Vector2(320, 240);
+                tooltip.anchoredPosition = new Vector2(Mathf.Floor(p.x), Mathf.Floor(p.y));
+            }
         }
     }
     void OnTriggerExit(Collider c) {
