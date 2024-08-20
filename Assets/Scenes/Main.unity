@@ -2220,7 +2220,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4049598350217843114, guid: 81d0571ee950ca346b5f691b53b8e27e, type: 3}
       propertyPath: onRobotCollide.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
-      value: 
+      value: Play
       objectReference: {fileID: 0}
     - target: {fileID: 6679284994930020513, guid: 81d0571ee950ca346b5f691b53b8e27e, type: 3}
       propertyPath: onHalfHealth.m_PersistentCalls.m_Calls.Array.data[1].m_Mode

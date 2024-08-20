@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour
         });
     }
 
+    bool paused;
     void Update() {
         if (!started) {
             if (Input.GetButtonDown("Submit") || Input.GetButtonDown("Cancel")) {
@@ -40,11 +41,22 @@ public class GameManager : MonoBehaviour
                 onStart.Invoke();
                 robot.enabled = true;
                 player.enabled = true;
+                player.transform.position = new Vector3(0, player.transform.position.y, 0);
                 enemyRobot.gameObject.SetActive(true);
                 enemyPlayer.SetActive(true);
 
                 mainMenuCamera.SetActive(false);
                 gameCamera.SetActive(true);
+            }
+        } else {
+            if (Input.GetButtonDown("Cancel")) {
+                paused = !paused;
+                if (paused) {
+                    info.Show("paused");
+                } else {
+                    info.Hide();
+                }
+                Time.timeScale = paused ? 0f : 1f;
             }
         }
     }
