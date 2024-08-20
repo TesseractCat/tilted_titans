@@ -26,6 +26,7 @@ public class EnemyInput : MonoBehaviour
     Player player;
     State state;
     float maxDistance = 1f;
+    bool punchingRight = false;
     void Start() {
         enemyRobot = GameObject.Find("Robot").transform;
         state = State.Ramming;
@@ -53,16 +54,17 @@ public class EnemyInput : MonoBehaviour
             targetPoint = enemyRobot.position.xz();
             maxDistance = 3f;
         } else if (state == State.PunchPositioning) {
-            targetPoint = enemyRobot.position.xz() + Vector2.up * 15f + Vector2.right * 7.5f;
+            targetPoint = enemyRobot.position.xz() + Vector2.up * 15f + (punchingRight ? Vector2.right : Vector2.left) * 7.5f;
             maxDistance = 3f;
             if ((targetPoint - centerPoint).magnitude < 3.5f) {
                 state = State.Punching;
             }
         } else if (state == State.Punching) {
-            targetPoint = centerPoint + Vector2.left * 3.5f;
+            targetPoint = centerPoint + (punchingRight ? Vector2.left : Vector2.right) * 3.5f;
             maxDistance = 3.5f;
             if ((targetPoint - playerPoint).magnitude < 0.2f) {
                 state = State.PunchPositioning;
+                punchingRight = Random.Range(0, 2) == 0;
                 player.Submit();
             }
         } else if (state == State.Reentering) {
@@ -99,6 +101,7 @@ public class EnemyInput : MonoBehaviour
     void OnRobotCollide() {
         if (state == State.Ramming) {
             state = State.PunchPositioning;
+            punchingRight = Random.Range(0, 2) == 0;
         }
     }
     bool dead = false;
